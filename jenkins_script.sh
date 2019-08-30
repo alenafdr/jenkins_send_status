@@ -4,16 +4,15 @@ login=$1
 password=$2
 jenkins_server=$3
 project=$4
-slcakbot_url=$5
+slcahook_url=$5
 json=$(curl "http://${login}:${password}@${jenkins_server}/job/${project}/lastBuild/api/json")
 
 regex='"result":"([^"]+)'
 
 [[ $json =~ $regex ]]
+text="Project - ${project} \nStatus last build - ${BASH_REMATCH[1]}"
 
-echo ${BASH_REMATCH[1]}
-
-curl -H "Accept: application/json" -H "Content-type: application/json" -X POST -d '{"project":"'"${project}"'","status":"'"${BASH_REMATCH[1]}"'"}' "${slcakbot_url}"
+curl -X POST -H 'Content-type: application/json' --data '{"text":"'"${text}"'"}' "${slcahook_url}"
 
 exit 0
 
